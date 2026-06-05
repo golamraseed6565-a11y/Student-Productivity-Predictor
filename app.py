@@ -1,13 +1,12 @@
 import streamlit as st
 import joblib
 import numpy as np
-import pandas as pd
 
-# Load the trained Random Forest model using the exact new file name
+# Load the lightweight trained Random Forest model
 try:
-    model = joblib.load('model_rf.pkl')
+    model = joblib.load('model_rf_final.pkl')
 except Exception as e:
-    st.error(f"Error loading the model file: {str(e)}")
+    st.error(f"Model load karne mein error aaya: {str(e)}")
 
 # Page configuration and title setup
 st.set_page_config(page_title="Student Productivity Predictor", layout="centered")
@@ -16,7 +15,7 @@ st.write("Enter your daily routine metrics to predict your Productivity Score ba
 
 st.markdown("---")
 
-# User Inputs section matching the exact 6 features from the new Colab notebook
+# User Inputs section matching the exact 6 features
 st.subheader("📊 Daily Routine Factors")
 
 col1, col2 = st.columns(2)
@@ -33,26 +32,21 @@ with col2:
 
 st.markdown("---")
 
-# Prediction handling triggered by the button
 if st.button("🚀 Predict Productivity Score", use_container_width=True):
-    # Construct the input array using the exact sequence of the 6 features
     user_data = np.array([[study_hours, focus_score, sleep_hours, phone_usage, stress_level, attendance]])
     
     try:
-        # Generate prediction using the loaded model
         prediction = model.predict(user_data)
         predicted_score = prediction[0]
         
-        # Display results and trigger celebratory balloons animation
         st.balloons()
         st.success(f"### 📈 Predicted Productivity Score: {predicted_score:.2f}%")
         
-        # Provide feedback based on the predicted score threshold
         if predicted_score > 75:
-            st.info("🎯 Great job! This routine indicates high productivity and strong academic focus.")
+            st.info("🎯 Great job! This routine indicates high productivity.")
         elif predicted_score > 50:
-            st.warning("⚠️ Moderate productivity. Adjusting study hours or reducing phone usage could boost performance.")
+            st.warning("⚠️ Moderate productivity. Adjusting study hours could boost performance.")
         else:
-            st.error("🚨 Low productivity risk. High stress/distraction levels or low study hours detected.")
+            st.error("🚨 Low productivity risk. High stress or low study hours detected.")
     except Exception as e:
-        st.error(f"Prediction Error: {str(e)}. Please ensure the inputs match model configuration.")
+        st.error(f"Prediction Error: {str(e)}")
